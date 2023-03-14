@@ -5,7 +5,6 @@ from prophet import Prophet
 from prophet.plot import plot_plotly
 
 import Scrappers
-import utils
 import streamlit as st
 
 
@@ -20,7 +19,7 @@ def generate_analisys(data):
 
     model = Prophet(
         interval_width=0.95,
-        daily_seasonality =True,
+        daily_seasonality=True,
         yearly_seasonality=True,
         weekly_seasonality=True,
     )
@@ -36,12 +35,9 @@ def generate_analisys(data):
 trendind = Scrappers.get_trending_tickers()
 options = [t[0] for t in trendind]
 
-
 default_ticker = "Select a Ticker"
 options.insert(0, default_ticker)
 options = np.array(options)
-
-
 
 with st.sidebar:
     with st.columns([1, 10, 1])[1]:
@@ -61,17 +57,19 @@ with st.sidebar:
             placeholder='Ticker',
         )
 
-
 if personal_ticker:
     try:
         data = yfinance.Ticker(personal_ticker)
         if personal_ticker == default_ticker:
             st.markdown(f'<h1>{"Select a Ticker"}</h1>', unsafe_allow_html=True)
         elif data.history().empty:
-            st.markdown(f'<h1>O Ticker <u style="color:red;">{personal_ticker}</u> não é válido</h1>', unsafe_allow_html=True)
+            st.markdown(f'<h1>O Ticker <u style="color:red;">{personal_ticker}</u> não é válido</h1>',
+                        unsafe_allow_html=True)
             st.write('Check the name of the Ticker')
         else:
-            st.markdown(f'<h1>Analysing <a href="https://finance.yahoo.com/quote/{personal_ticker.replace("^", "%5E")}" style="color:red;"><u>{personal_ticker}</u></a></h1>', unsafe_allow_html=True)
+            st.markdown(
+                f'<h1>Analysing <a href="https://finance.yahoo.com/quote/{personal_ticker.replace("^", "%5E")}" style="color:red;"><u>{personal_ticker}</u></a></h1>',
+                unsafe_allow_html=True)
             years = st.slider('Number of years in history', 1, 50, 2)
             data = data.history(f'{years}y').reset_index()
             (chart_tab, data_tab) = st.tabs(["📈 Chart", "🗃 Data"])
@@ -81,9 +79,7 @@ if personal_ticker:
             with st.container():
                 generate_analisys(data)
 
-
-
-            daily_seasonality  = st.checkbox('Daily seasonality ')
+            daily_seasonality = st.checkbox('Daily seasonality ')
             weekly_seasonality = st.checkbox('Weekly_seasonality')
             yearly_seasonality = st.checkbox('Yearly_seasonality')
 
@@ -91,6 +87,3 @@ if personal_ticker:
         st.markdown(f'<h1>{"Selecione um ticker"}</h1>', unsafe_allow_html=True)
 else:
     st.markdown(f'<h1>{"Selecione um ticker"}</h1>', unsafe_allow_html=True)
-
-
-
